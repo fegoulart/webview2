@@ -6,31 +6,63 @@
 //
 
 import UIKit
+import SafariServices
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    var window: UIWindow?
 
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        self.window?.rootViewController = setupTabBar()
+        self.window?.makeKeyAndVisible()
         return true
     }
 
-    // MARK: UISceneSession Lifecycle
-
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        // Called when a new scene session is being created.
-        // Use this method to select a configuration to create the new scene with.
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    private func setupTabBar() -> UITabBarController {
+        let tabBarController = UITabBarController()
+        tabBarController.tabBar.backgroundColor = .systemGray
+        tabBarController.tabBar.tintColor = .white
+        tabBarController.tabBar.unselectedItemTintColor = .darkGray
+        tabBarController.viewControllers = setupViewControllers()
+        return tabBarController
     }
 
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+    private func setupViewControllers() -> [UIViewController] {
+        return [mainViewController(), webKitViewController(), safariKitViewController()]
     }
 
+    private func mainViewController() -> UIViewController {
+        let viewController = HomeViewController()
+        viewController.tabBarItem = tabBarItem(title: "home", systemIcon: "house")
+        return viewController
+    }
 
+    private func webKitViewController() -> UIViewController {
+        let url = "https://www.serasa.com.br/"
+        let viewController = WebKitViewController(url: url)
+        viewController.tabBarItem = tabBarItem(title: "webview", systemIcon: "cloud")
+        return viewController
+    }
+
+    private func safariKitViewController() -> UIViewController {
+        let config = SFSafariViewController.Configuration()
+                config.entersReaderIfAvailable = true
+        let viewController = SFSafariViewController(
+            url: URL(string: "https://www.serasa.com.br/")!,
+            configuration: config
+        )
+        viewController.tabBarItem = tabBarItem(title: "safari", systemIcon: "safari")
+        return viewController
+    }
+
+    private func tabBarItem(title: String, systemIcon: String) -> UITabBarItem {
+        let tabBarImage = UIImage(systemName: systemIcon)
+        return UITabBarItem(title: title, image: tabBarImage, selectedImage: tabBarImage)
+    }
 }
-
